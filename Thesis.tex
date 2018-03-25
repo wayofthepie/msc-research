@@ -3,7 +3,7 @@
 %% ---------------------------------------------------------------- 
 
 % Set up the document
-\documentclass[a4paper, 11pt, oneside]{thesis}  % Use the "Thesis" style, based on the ECS Thesis style by Steve Gunn
+\documentclass[a4paper, 11pt, oneside]{Thesis}  % Use the "Thesis" style, based on the ECS Thesis style by Steve Gunn
 
 \usepackage{verbatim}
 % Include any extra LaTeX packages required
@@ -22,8 +22,8 @@
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
 
 % Set up the Title Page
-\title  {Microservices and Containers}
-\authors  {Donna O'Shea}
+\title  {Kubernetes Infrastructure Management}
+\authors  {Stephen O'Brien}
             
 \addresses  {\groupname\\\deptname\\\univname}  % Do not change this here, instead these must be set in the "Thesis.cls" file, please look through it instead
 \date       {\today}
@@ -49,7 +49,7 @@
 
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-I, FIRSTNAME LASTNAME , declare that this proposal titled, `PROPOSAL TITLE' and the work presented in it are my own. I confirm that:
+I, Stephen O'Brien, declare that this proposal titled, `Kubernetes Infrastructure Management' and the work presented in it are my own. I confirm that:
 
 \begin{itemize} 
 \item[\tiny{$\blacksquare$}] This work was done wholly or mainly while in candidature for an masters degree at Cork Institute of Technology.
@@ -74,18 +74,18 @@ Date:\\
 \clearpage  % Declaration ended, now start a new page
 
 %% ----------------------------------------------------------------
-\begin{comment}
 % The Abstract Page
 \addtotoc{Abstract}  % Add the "Abstract" page entry to the Contents
 \abstract{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-The Thesis Abstract is written here (and usually kept to just this page). The page is kept centered vertically so can expand into the blank space above the title too\ldots
+Currently the initialization of private production-grade Kubernetes clusters requires the use of multiple tools to create and manage the underlying virtual resources. Public clouds such as Google Cloud or Amazon Web Services have tools which reduce this complexity and manage the lifecycle of nodes in the cluster. This paper outlines a Kubernetes-native infrastructure management system for private hypervisors, with the capability of managing the underlying virtual resources of a Kubernetes cluster on multiple hypervisors. Management capabilities include scaling, health monitoring and recovery, zero-downtime updates and querying of the underlying infrastructure.
 
 }
 
 \clearpage  % Abstract ended, start a new page
 %% ----------------------------------------------------------------
+\begin{comment}
 
 \setstretch{1.3}  % Reset the line-spacing to 1.3 for body text (if it has changed)
 
@@ -147,10 +147,10 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 
 \input{Chapters/ResearchObjectives} % Problem
 
-\input{Chapters/ResearchMethodology} % Solution Approach
+%\input{Chapters/ResearchMethodology} % Solution Approach
 
-\input{Chapters/WorkPlan} % Conclusions and Term 2 work
-\input{Chapters/EthicalIssues}
+%\input{Chapters/WorkPlan} % Conclusions and Term 2 work
+%\input{Chapters/EthicalIssues}
 %% ----------------------------------------------------------------
 \label{Bibliography}
 \bibliographystyle{IEEEtranN}  % Use the "IEEE Transaction" BibTeX style for formatting the Bibliography
@@ -164,9 +164,9 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 
 \appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
 
-\input{Appendices/AppendixA}	% Appendix Title
+%\input{Appendices/AppendixA}	% Appendix Title
 
-\input{Appendices/AppendixB} % Appendix Title
+%\input{Appendices/AppendixB} % Appendix Title
 
 %\input{Appendices/AppendixC} % Appendix Title
 

@@ -1,3 +1,35 @@
 \chapter{Research Context}
 \lhead{\emph{Research Context}}
-Describe the broad context of the research, including a review of the current state of the art in the topic of the proposed research with references, and the overall contribution which it will make to the general field of research.
+Infrastructure management can be split into multiple layers. The foundation of any infrastructure setup is the physical hosts, which these days generally run a \emph{hypervisor}, on top of which you run virtual machines (VM). With the physical hosts are physical networks and storage, again with the help of hypervisors and tooling around virtualization, networking and storage can both be virtualized and software defined. 
+
+Until recently most workloads were run directly on top of the operating system within VMs with little isolation, however with the evolution of process isolation technology - cgroups, chroot and other tools - workloads are generally done at a higher level of abstraction, within \emph{containers}. This is where \emph{Kubernetes} \cite{44843} comes into play, it is a scheduler for container workloads across a cluster of machines.
+
+Building a Kubernetes cluster however generally means interaction with all the above mentioned layers, you need the physical machines, you then need the VMs and finally you need to have \emph{Docker} running on these machines to allow Kubernetes launch and manage containers. To run Kubernetes itself requires configuration of multi-layered networking and possibly storage solutions. Setting all this up usually involves the use of multiple infrastructure management tools. It is a goal of this research project to reduce the complexity of cluster initialization and management, pushing some of these responsibilities directly into Kubernetes.
+
+\section{The Current State Of Infrastructure Management}
+Although some infrastructure management tools can fit into more than a single category, most are best suited for a specific area of management. In the case of \emph{Orchestration} - creation of VM's on a hypervisor/public cloud - one of the most featureful tools is \emph{Terraform}. Terraform allows you to define the state you want your infrastructure to be in - by state here I mean the state of whatever resources the hypervisor you are running allows, for example VMs, software defined networks or storage.
+
+It also keeps track of this state as you add more resources. When it creates the resources you define, it will write this state to a file and the next time you make changes it will compare them with this previous state and only apply changes that differ. This is powerful, especially to see what new changes are actually doing to the system. However, there is no runtime management of these resources. So if a VM fails, it is a manual process to recover it, one which Terraform knows nothing about.
+
+Terraform does not, alone, apply configuration to the operating system (OS) on a VM. This is where Configuration Management tools come into play, an example of which is Ansible. With Ansible, you define the state you want the OS to be in and it will apply this. State in this case means installation of tools such as docker, creation of initialization scripts for such tools, creation of users and anything else you generally do to configure VMs. Terraform and Ansible together are quite a powerful pair, with these tools you can build out a set of VMs to launch Kubernetes. Once the VM's for Kubernetes are created you need to initialize the nodes. There is a tool called \emph{kubeadm} which helps with this. It can be run on multiple nodes and configure them to create a Kubernetes cluster. 
+
+This creation and configuration of VM's has a mature ecosystem, however management of the state of these VM's during their lifetime is not as mature.
+
+\subsection{More Powerful Tooling}
+There is a tool called \emph{Bosh} \cite{bosh} which provides the capability of managing the VM lifecycle, including: recovery in the event of failure and applying updates to the underlying VM's - it does this in an immutable manner by destroying and creating new VM's. You tell it that your system needs $n$ VM's of one type and $m$ VM's of another type and it will manage these VM's until you tell it to remove them. If they fail it will remove and recreate them. There are tools which combine Bosh and Kubernetes also - \emph{Kubo} \cite{kubo} and \emph{Pivotal Container Service} (PKS) \cite{pks} being two such tools. 
+
+The issue with this combination however is that you now have two systems to install and manage. If you need to scale Kubernetes or update it's underlying VM's you must talk to Bosh to do this, this also means there is no way for Kubernetes to gracefully migrate workloads which were running on those VM's. 
+
+Public clouds, such as Amazon Web Services or Google Cloud, have tools which greatly simplify cluster creation and management over it's lifetime. Google Cloud has a CLI tool called \emph{gcloud} which exposes cluster creation as a single command. It also gives users node monitoring and recovery capabilities with its \emph{Node Auto-Repair} tool \cite{noderepair}. These capabilities are part of the focus of this research project, albeit this project focuses on adding these capabilities directly to Kubernetes, whereas the Node Auto-Repair tool is only available on Google Cloud's Kubernetes cluster offering.
+
+Kubernetes already manages container workloads in a manner that would also suit management of its own underlying VM's. Creation of container workloads is done through its API using well defined resources. For example:
+
+\begin{itemize}
+  \item \emph{Pods} are workloads which are long lived multi container services.
+  \item \emph{Deployments} are an abstraction above pods, which also take care of replicating and mnaging the lifecycle of pods - if a replica dies it will be restarted.
+  \item \emph{Jobs} are also an abstraction above pods, these are meant to be one off processes that run to completion.
+\end{itemize}
+
+If Kubernetes could manage VM's as it does the above resources it would remove the need for tools like Bosh or Terraform in the creation and management of Kubernetes infrastructure. It would also lessen the need for configuration management tools such as Ansible, however such tools would still be needed in the creation of VM images which Kubernetes would use to build VM instances from. What Kubernetes does already have, natively, for detection of node issues is the \emph{node-problem-detector} \cite{nodeprob}. However there are no components yet which can remedy the problems this detector reports on, especially not at the VM level.
+
+There is quite a complex setup needed for the most part in the creation and management of production level infrastructure for Kubernetes. Bosh simplifies this, but it is still one step removed. Letting Kubernetes have more control over its underlying resources would remove a lot of the pain and complexity of this setup and open up opportunities for cluster management which do not currently exist. This is the main focus of this research project.
